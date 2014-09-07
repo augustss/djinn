@@ -20,6 +20,7 @@
 module LJT (module LJTFormula, provable,
             prove, Proof) where
 
+import Control.Applicative(Applicative(..), Alternative(empty, (<|>)))
 import Control.Monad
 import Data.List (partition)
 import Debug.Trace
@@ -138,6 +139,10 @@ nf ee = spine ee []
 -- results.  But this is much better for backtracking.
 newtype P a = P { unP :: PS -> [(PS, a)] }
 
+instance Applicative P where
+    pure = return
+    (<*>) = ap
+
 instance Monad P where
     return x = P $ \ s -> [(s, x)]
     P m >>= f = P $ \ s ->
@@ -146,6 +151,10 @@ instance Monad P where
 instance Functor P where
     fmap f (P m) = P $ \ s ->
         [ (s', f x) | (s', x) <- m s ]
+
+instance Alternative P where
+    empty = mzero
+    (<|>) = mplus
 
 instance MonadPlus P where
     mzero = P $ \ _s -> []
