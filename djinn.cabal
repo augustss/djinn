@@ -3,7 +3,7 @@ Version:        2014.9.7
 Synopsis:       Generate Haskell code from a type
 Description:    Djinn uses an theorem prover for intuitionistic propositional logic
                 to generate a Haskell expression when given a type.
-Bug-reports:    https://github.com/haskell/augustss/djinn/issues
+Bug-reports:    https://github.com/augustss/djinn/issues
 License:        BSD3
 License-File:   LICENSE
 Author:         Lennart Augustsson
