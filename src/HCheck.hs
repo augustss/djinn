@@ -4,8 +4,7 @@
 --
 module HCheck(htCheckEnv, htCheckType) where
 import Data.List(union)
---import Control.Monad.Trans
-import Control.Monad.Error()
+import Control.Monad.Except()
 import Control.Monad.State
 import Data.IntMap(IntMap, insert, (!), empty)
 import Data.Graph(stronglyConnComp, SCC(..))
@@ -48,7 +47,7 @@ htCheckType its t = flip evalStateT initState $ do
     let vs = getHTVars t
     ks <- mapM (const newKVar) vs
     let env = zip vs ks ++ [(i, k) | (i, (_, _, k)) <- its ]
-    iHKindStar env t        
+    iHKindStar env t
 
 htCheckEnv :: [(HSymbol, ([HSymbol], HType, a))] -> Either String [(HSymbol, ([HSymbol], HType, HKind))]
 htCheckEnv its =
@@ -107,7 +106,7 @@ iHKindStar env t = do
 
 unifyK :: HKind -> HKind -> M ()
 unifyK k1 k2 = do
-    let follow k@(KVar i) = getVar i >>= return . maybe k id 
+    let follow k@(KVar i) = getVar i >>= return . maybe k id
         follow k = return k
         unify KStar KStar = return ()
         unify (KArrow k11 k12) (KArrow k21 k22) = do unifyK k11 k21; unifyK k12 k22
@@ -121,7 +120,7 @@ unifyK k1 k2 = do
     k1' <- follow k1
     k2' <- follow k2
     unify k1' k2'
-    
+
 
 getVarHKind :: KEnv -> HSymbol -> M HKind
 getVarHKind env v =
