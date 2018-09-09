@@ -7,6 +7,7 @@ module HTypes(HKind(..), HType(..), HSymbol, hTypeToFormula, pHSymbol, pHType, p
         prHSymbolOp,
         htNot, isHTUnion, getHTVars, substHT,
         HClause, HPat, HExpr(HEVar), hPrClause, termToHExpr, termToHClause, getBinderVars) where
+import Prelude hiding ((<>))
 import Text.PrettyPrint.HughesPJ(Doc, renderStyle, style, text, (<>), parens, ($$), vcat, punctuate,
          sep, fsep, nest, comma, (<+>))
 import Data.Char(isAlphaNum, isAlpha, isUpper)
@@ -161,7 +162,7 @@ hTypeToFormula :: [(HSymbol, ([HSymbol], HType, a))] -> HType -> Formula
 hTypeToFormula ss (HTTuple ts) = Conj (map (hTypeToFormula ss) ts)
 hTypeToFormula ss (HTArrow t1 t2) = hTypeToFormula ss t1 :-> hTypeToFormula ss t2
 hTypeToFormula ss (HTUnion ctss) = Disj [ (ConsDesc c (length ts), hTypeToFormula ss (HTTuple ts)) | (c, ts) <- ctss ]
-hTypeToFormula ss t = 
+hTypeToFormula ss t =
     case expandSyn ss t [] of
     Nothing -> PVar $ Symbol $ show t
     Just t' -> hTypeToFormula ss t'
@@ -249,7 +250,7 @@ unSymbol (Symbol s) = s
 termToHExpr :: Term -> HExpr
 termToHExpr term = niceNames $ etaReduce $ remUnusedVars $ collapeCase $ fixSillyAt $ remUnusedVars $ fst $ conv [] term
   where conv _vs (Var s) = (HEVar $ unSymbol s, [])
-        conv vs (Lam s te) = 
+        conv vs (Lam s te) =
                 let hs = unSymbol s
                     (te', ss) = conv (hs : vs) te
                 in  (hELam [convV hs ss] te', ss)
@@ -298,8 +299,8 @@ termToHExpr term = niceNames $ etaReduce $ remUnusedVars $ collapeCase $ fixSill
                         HEVar v | v `elem` vs && null as -> (b', [(v, HPTuple ps)] ++ sb ++ sa)
                         _ -> (foldr HEApply (hECase a' [(HPTuple ps, b')]) as',
                               sb ++ sa ++ concat sss)
-                    
-        convAp vs f as = 
+
+        convAp vs f as =
                 let (es, sss) = unzip $ map (conv vs) (f:as)
                 in  (foldl1 HEApply es, concat sss)
 
