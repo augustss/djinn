@@ -14,6 +14,7 @@ import Data.List(union, (\\))
 import Control.Monad(zipWithM)
 import Text.ParserCombinators.ReadP
 import LJTFormula
+import Prelude hiding ((<>))
 
 --import Debug.Trace
 
