@@ -1,3 +1,6 @@
+# Haskell files
+.stack-work/
+dist/
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

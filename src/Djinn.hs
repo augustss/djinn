@@ -9,7 +9,7 @@ import Data.List(sortBy, nub, intersperse)
 import Data.Ratio
 import Text.ParserCombinators.ReadP
 import Control.Monad(when)
-import Control.Monad.Error()
+import Control.Monad.Except()
 import System.Exit
 import System.Environment
 
@@ -149,16 +149,16 @@ runCmd s (Help verbose) = do
     putStr $ helpText ++ unlines (map getHelp commands) ++ getSettings s
     when verbose $ putStr verboseHelp
     return (False, s)
-runCmd s Quit = 
+runCmd s Quit =
     return (True, s)
 runCmd s (Load f) = loadFile s f
-runCmd s (Add i t) = 
+runCmd s (Add i t) =
     case htCheckType (synonyms s) t of
     Left msg -> do putStrLn $ "Error: " ++ msg; return (False, s)
     Right _ -> return (False, s { axioms = (i, t) : filter ((/= i) . fst) (axioms s) })
 runCmd _ Clear =
     return (False, startState)
-runCmd s (Del i) = 
+runCmd s (Del i) =
     return (False, s { axioms   = filter ((i /=) . fst) (axioms s)
                      , synonyms = filter ((i /=) . fst) (synonyms s)
                      , classes = filter ((i /=) . fst) (classes s) })
@@ -210,14 +210,14 @@ query prType s i ctx g =
             putStrLn $ "-- " ++ i ++ " cannot be realized."
             return (False, s)
         ps -> do
-	    let ps' = take (cutOff s) ps
+            let ps' = take (cutOff s) ps
             let score p =
                    let c = termToHClause i p
                        bvs = getBinderVars c
                        r = if null bvs then (0, 0) else (length (filter (== "_") bvs) % length bvs, length bvs)
                    in  --trace (hPrClause c ++ " ++++ " ++ show r)
                        (r, c)
-                e:es = nub $ 
+                e:es = nub $
                         if sorted s then
                             map snd $ sortBy (\ (x,_) (y,_) -> compare x y) $ map score ps'
                         else
@@ -350,7 +350,7 @@ pQueryInstance = do
 pContext :: ReadP [Context]
 pContext = do
     let pCtx = do c <- pHSymbol True; ts <- many pHTAtom; return (c, ts)
-    ctx <- 
+    ctx <-
         do
           schar '('
           ctx <- sepBy1 pCtx (schar ',')
@@ -417,7 +417,7 @@ pSet = pSetFlag +++ pSetVal
 
 pSetFlag :: ReadP Cmd
 pSetFlag = do
-    val <- (do schar '+'; return True) +++ (do schar '-'; return False) 
+    val <- (do schar '+'; return True) +++ (do schar '-'; return False)
     f <- foldr (+++) pfail [ do pPrefix s; return (set val) | (s, _, _, set) <- options ]
     return $ Set $ f
 
