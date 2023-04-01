@@ -7,6 +7,7 @@ module HTypes(HKind(..), HType(..), HSymbol, hTypeToFormula, pHSymbol, pHType, p
         prHSymbolOp,
         htNot, isHTUnion, getHTVars, substHT,
         HClause, HPat, HExpr(HEVar), hPrClause, termToHExpr, termToHClause, getBinderVars) where
+import Prelude hiding ((<>))
 import Text.PrettyPrint.HughesPJ(Doc, renderStyle, style, text, (<>), parens, ($$), vcat, punctuate,
          sep, fsep, nest, comma, (<+>))
 import Data.Char(isAlphaNum, isAlpha, isUpper)
