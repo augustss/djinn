@@ -140,11 +140,11 @@ nf ee = spine ee []
 newtype P a = P { unP :: PS -> [(PS, a)] }
 
 instance Applicative P where
-    pure = return
+    pure x = P $ \ s -> [(s, x)]
     (<*>) = ap
 
 instance Monad P where
-    return x = P $ \ s -> [(s, x)]
+    return = pure
     P m >>= f = P $ \ s ->
         [ y | (s',x) <- m s, y <- unP (f x) s' ]
 
