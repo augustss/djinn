@@ -4,6 +4,7 @@
 --
 module HCheck(htCheckEnv, htCheckType) where
 import Data.List(union)
+import Control.Monad(liftM2)
 import Control.Monad.Except()
 import Control.Monad.State
 import Data.IntMap(IntMap, insert, (!), empty)
