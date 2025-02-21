@@ -224,7 +224,7 @@ query prType s i ctx g =
                             map (termToHClause i) ps'
                 pr = putStrLn . hPrClause
                 sctx = if null ctx then "" else showContexts ctx ++ " => "
-            when (debug s) $ putStrLn ("+++ " ++ show (head ps))
+            when (debug s) $ putStrLn ("+++ " ++ show (ps !! 0))
             when prType $ putStrLn $ prHSymbolOp i ++ " :: " ++ sctx ++ show g
             pr e
             when (multi s) $ mapM_ (\ x -> putStrLn "-- or" >> pr x) es
@@ -463,4 +463,3 @@ getSettings s = unlines $ [
     "Current settings" ] ++ [ "    " ++ (if gett s then "+" else "-") ++ name ++ replicate (10 - length name) ' ' ++ descr |
                               (name, descr, gett, _set) <- options ] ++
     [ "    cutoff=" ++ show (cutOff s) ++ " maximum number of solutions generated" ]
-
